@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ori Yonay — Web Design</title>
+    <meta name="description" content="Distinctive, fast websites designed and developed by Ori Yonay." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper: "#f2efe7",
+              ink: "#101d32",
+              acid: "#c8ff32",
+              orange: "#ff6235",
+            },
+            fontFamily: {
+              sans: ["Arial", "Helvetica", "sans-serif"],
+              serif: ["Georgia", "Times New Roman", "serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="css/custom.css" />
+  </head>
+  <body class="bg-paper font-sans text-ink">
+    <main class="site">
+      <header class="site-header">
+        <p class="wordmark">
+          <span>OY</span>
+          <span>Web<br />Design</span>
+        </p>
+      </header>
+
+      <section class="hero-stage">
+        <h1 class="hero-title">
+          <span>Websites with</span>
+          <span><em>pulse,</em> not filler.</span>
+        </h1>
+
+        <svg class="heartbeat" viewBox="0 0 1800 80" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            class="hb-track"
+            pathLength="1000"
+            d="M0 40 H150 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H390 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H630 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H870 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H1800"
+          />
+          <path
+            class="hb-signal"
+            pathLength="1000"
+            d="M0 40 H150 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H390 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H630 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H870 l7-2 5 2 4 0 8-32 10 50 7-20 9 2 H1800"
+          />
+        </svg>
+
+        <div class="carousel" data-carousel>
+          <div class="carousel-frame">
+            <a class="slide is-on" href="https://globalhardwoodinc.com" target="_blank" rel="noreferrer" aria-label="Global Hardwood">
+              <img src="work/global-hardwood.jpg" alt="Global Hardwood" width="1440" height="900" draggable="false" />
+            </a>
+            <a class="slide" href="https://accolade-recovery.fly.dev" target="_blank" rel="noreferrer" aria-label="Accolade Recovery" aria-hidden="true" tabindex="-1">
+              <img src="work/accolade-recovery.jpg" alt="Accolade Recovery" width="1440" height="900" draggable="false" />
+            </a>
+            <a class="slide" href="https://odsuite.com" target="_blank" rel="noreferrer" aria-label="Od Suite" aria-hidden="true" tabindex="-1">
+              <img src="work/od-suite.jpg" alt="Od Suite" width="1440" height="900" draggable="false" />
+            </a>
+            <a class="slide" href="https://quick-pa.com" target="_blank" rel="noreferrer" aria-label="QuickPA" aria-hidden="true" tabindex="-1">
+              <img src="work/quick-pa.jpg" alt="QuickPA" width="1440" height="900" draggable="false" />
+            </a>
+          </div>
+          <div class="carousel-meta">
+            <p class="caption" data-caption>Global Hardwood</p>
+            <div class="ticks" aria-hidden="true">
+              <span class="tick is-on"></span>
+              <span class="tick"></span>
+              <span class="tick"></span>
+              <span class="tick"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <a class="contact-link" href="mailto:oriyonay12@gmail.com">oriyonay12@gmail.com</a>
+        <a class="contact-link" href="tel:+18056307760">805.630.7760</a>
+      </footer>
+    </main>
+
+    <script>
+      (function () {
+        const root = document.querySelector("[data-carousel]");
+        if (!root) return;
+
+        const slides = Array.from(root.querySelectorAll(".slide"));
+        const ticks = Array.from(root.querySelectorAll(".tick"));
+        const caption = root.querySelector("[data-caption]");
+        const names = slides.map((slide) => slide.getAttribute("aria-label"));
+        const interval = 5200;
+        let index = 0;
+        let elapsed = 0;
+        let last = performance.now();
+        let paused = false;
+
+        function show(next) {
+          index = (next + slides.length) % slides.length;
+          slides.forEach((slide, i) => {
+            const on = i === index;
+            slide.classList.toggle("is-on", on);
+            slide.setAttribute("aria-hidden", on ? "false" : "true");
+            slide.tabIndex = on ? 0 : -1;
+          });
+          ticks.forEach((tick, i) => tick.classList.toggle("is-on", i === index));
+          caption.textContent = names[index];
+        }
+
+        function frame(now) {
+          const delta = now - last;
+          last = now;
+          if (!paused) {
+            elapsed += delta;
+            if (elapsed >= interval) {
+              elapsed = 0;
+              show(index + 1);
+            }
+            const progress = elapsed / interval;
+            ticks.forEach((tick) => {
+              tick.style.setProperty("--progress", tick.classList.contains("is-on") ? progress : 0);
+            });
+          }
+          requestAnimationFrame(frame);
+        }
+
+        root.addEventListener("mouseenter", () => {
+          paused = true;
+          root.classList.add("is-paused");
+        });
+        root.addEventListener("mouseleave", () => {
+          paused = false;
+          root.classList.remove("is-paused");
+        });
+        root.addEventListener("focusin", () => {
+          paused = true;
+          root.classList.add("is-paused");
+        });
+        root.addEventListener("focusout", () => {
+          paused = false;
+          root.classList.remove("is-paused");
+        });
+
+        requestAnimationFrame(frame);
+      })();
+    </script>
+  </body>
+</html>
